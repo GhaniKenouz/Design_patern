@@ -11,15 +11,24 @@ import com.fges.todoapp.util.FileReaderImpl;
 import com.fges.todoapp.util.FileWriter;
 import com.fges.todoapp.util.FileWriterImpl;
 import com.fges.todoapp.util.PathValidator;
-import com.fges.todoapp.util.PositionalArgumentValidator;
 import com.fges.todoapp.util.TodoLister;
 import com.fges.todoapp.util.CsvTodoLister;
 import com.fges.todoapp.util.JsonTodoLister;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Hello world!
  */
 public class App {
+
+    private static final Map<String, CommandFactory> COMMANDS = new HashMap<>();
+
+    static {
+        COMMANDS.put("insert", InsertCommand::new);
+        COMMANDS.put("list", ListCommand::new);
+    }
 
     public static void main(String[] args) throws Exception {
         System.exit(exec(args));
@@ -37,37 +46,28 @@ public class App {
         FileWriter fileWriter = new FileWriterImpl();
         TodoLister todoLister;
 
-        switch (commandType) {
-            case "insert":
-                if (!argumentValidator.validateArguments(args) || !PathValidator.isValidPath(args[1])) {
-                    System.err.println("Invalid arguments or file path.");
-                    return 1;
-                }
-                Command insertCommand = new InsertCommand(fileReader, argumentValidator, fileWriter);
-                return insertCommand.execute(args);
-            case "list":
-                if (!argumentValidator.validateArguments(args) || !PathValidator.isValidPath(args[1])) {
-                    System.err.println("Invalid arguments or file path.");
-                    return 1;
-                }
-                // Déterminez le type de fichier et choisir le TodoLister approprié
-                String fileType = args[1].substring(args[1].lastIndexOf('.') + 1);
-                switch (fileType) {
-                    case "json":
-                        todoLister = new JsonTodoLister();
-                        break;
-                    case "csv":
-                        todoLister = new CsvTodoLister();
-                        break;
-                    default:
-                        System.err.println("Unsupported file type.");
-                        return 1;
-                }
-                Command listCommand = new ListCommand(fileReader, argumentValidator, todoLister);
-                return listCommand.execute(args);
-            default:
-                System.err.println("Invalid command.");
-                return 1;
+        if (!COMMANDS.containsKey(commandType)) {
+            System.err.println("Invalid command.");
+            return 1;
         }
+
+        CommandFactory commandFactory = COMMANDS.get(commandType);
+        Command command = commandFactory.create(fileReader, argumentValidator, fileWriter, todoLister);
+
+        if (command == null) {
+            System.err.println("Error creating command.");
+            return 1;
+        }
+
+        if (!argumentValidator.validateArguments(args) || !PathValidator.isValidPath(args[1])) {
+            System.err.println("Invalid arguments or file path.");
+            return 1;
+        }
+
+        return command.execute(args);
+    }
+
+    private interface CommandFactory {
+        Command create(FileReader fileReader, ArgumentValidator argumentValidator, FileWriter fileWriter, TodoLister todoLister);
     }
 }
