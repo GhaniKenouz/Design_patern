@@ -3,7 +3,6 @@ package com.fges.todoapp.e2e;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fges.todoapp.App;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class GhostTests {
     /**
      * Version of the TP to use with the API, refer to the TP name on the slides!!
      */
-    private static final String TP_NAME = "tp1";
+    private static final String TP_NAME = "tp2";
 
     /**
      * Should not change
@@ -84,7 +83,7 @@ public class GhostTests {
 
         return new ExecOutput(
                 sequence,
-                Arrays.stream(sout.toString().split("\n")).toList(),
+                Arrays.stream(sout.toString().split("\n")).map(String::trim).toList(),
                 exitOutput
         );
     }

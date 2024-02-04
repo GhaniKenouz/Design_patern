@@ -1,6 +1,9 @@
-// Command.java
 package com.fges.todoapp.commands;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+
 public interface Command {
-    int execute(String[] args);
+    int execute(List<String> positionalArgs, Path filePath, boolean markDone) throws IOException;
 }
