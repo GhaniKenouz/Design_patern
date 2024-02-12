@@ -2,6 +2,8 @@
 package com.fges.todoapp;
 
 import com.fges.todoapp.commands.*;
+import com.fges.todoapp.commands.CommandRegistry;
+import com.fges.todoapp.files.FileHandlerRegistry;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -12,19 +14,25 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+import com.fges.todoapp.files.FileHandler;
+import com.fges.todoapp.files.FileHandlerFactory;
+import com.fges.todoapp.files.FileHandlerRegistry;
+import com.fges.todoapp.files.csv.CsvFileHandlerFactory;
+import com.fges.todoapp.files.json.JsonFileHandlerFactory;
+import com.fges.todoapp.util.TaskState;
+import com.fges.todoapp.util.TodoFactory;
+
 
 /**
  * Hello world!
  */
 public class App {
 
+    // Initialisation du registre de fichier
+    private static final FileHandlerRegistry registry = new FileHandlerRegistry();
+    // Déclaration du registre de commande
+    private static final CommandRegistry commandRegistry = new CommandRegistry();
     private static final Map<String, Command> commandRegistry = new HashMap<>();
-
-    // Table pour la correspondence
-    static {
-        commandRegistry.put("insert", new InsertCommand());
-        commandRegistry.put("list", new ListCommand());
-    }
 
     private static Command createCommandExecutor(String command) {
         return commandRegistry.get(command);
