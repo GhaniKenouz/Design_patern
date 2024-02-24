@@ -1,14 +1,16 @@
+package com.fges.todoapp.todo;
+
 import com.fges.todoapp.util.TaskState;
 
 public class Todo {
     private String name;
     private TaskState taskState;
 
-    public Todo() {}
+    public Todo(){}
 
-    public Todo(String name, boolean isDone) {
+    public Todo(String name, TaskState taskState) {
         this.name = name;
-        this.taskState = (isDone) ? TaskState.DONE : TaskState.NOT_DONE;
+        this.taskState = taskState;
     }
 
     public String getName() {
@@ -25,5 +27,9 @@ public class Todo {
 
     public void setTaskState(TaskState taskState) {
         this.taskState = taskState;
+    }
+
+    public boolean isDone() {
+        return taskState == TaskState.DONE;
     }
 }

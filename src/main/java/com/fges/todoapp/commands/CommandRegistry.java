@@ -1,36 +1,35 @@
-package com.fges.todoapp.files;
+package com.fges.todoapp.commands;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class FileHandlerRegistry {
-    private Map<String, FileHandlerFactory> registry = new HashMap<>();
+// Registre des commandes
+public class CommandRegistry {
+    private Map<String, Command> commandMap = new HashMap<>();
 
-    public void registerFileFactory(String extension, FileHandlerFactory factory) {
-        if (extension == null || factory == null) {
-            throw new IllegalArgumentException("Extension or factory cannot be null");
-        }
-        registry.put(extension.toLowerCase(), factory);
+    // Ajouter une commande au registre
+    public void addCommand(String commandName, Command command) {
+        commandMap.put(commandName, command);
     }
 
-    public FileHandlerFactory getFileHandlerFactory(String extension) {
-        if (extension == null) {
-            throw new IllegalArgumentException("Extension cannot be null");
-        }
-        return registry.get(extension.toLowerCase());
+    // Récupérer une commande à partir de son nom
+    public Command getCommand(String commandName) {
+        return commandMap.get(commandName);
     }
 
-    public boolean hasFileHandler(String extension) {
-        if (extension == null) {
-            throw new IllegalArgumentException("Extension cannot be null");
-        }
-        return registry.containsKey(extension.toLowerCase());
+    // Supprimer une commande du registre
+    public void removeCommand(String commandName) {
+        commandMap.remove(commandName);
     }
 
-    public void unregisterFileHandler(String extension) {
-        if (extension == null) {
-            throw new IllegalArgumentException("Extension cannot be null");
-        }
-        registry.remove(extension.toLowerCase());
+    // Vérifier si une commande existe dans le registre
+    public boolean containsCommand(String commandName) {
+        return commandMap.containsKey(commandName);
+    }
+
+    // Effacer toutes les commandes du registre
+    public void clearCommands() {
+        commandMap.clear();
     }
 }
+

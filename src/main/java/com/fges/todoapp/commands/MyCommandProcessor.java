@@ -1,32 +1,50 @@
 package com.fges.todoapp.commands;
 
 import com.fges.todoapp.util.PositionalArgumentValidator;
+import com.fges.todoapp.todo.TaskState;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.List;
 
 public class MyCommandProcessor implements CommandProcessor {
     private String fileName;
+    private TaskState taskState;
+    private String outputFile;
     private List<String> positionalArgs;
 
     @Override
     public int processCommand(CommandLine cmd) {
         this.fileName = cmd.getOptionValue("s");
 
-        PositionalArgumentValidator argumentValidator = new PositionalArgumentValidator();
-        if (!argumentValidator.validateArguments(cmd)) {
-            System.err.println("Validation des arguments positionnels échouée.");
+        this.taskState = cmd.hasOption("done") ? TaskState.DONE : TaskState.NOT_DONE;
+
+        if (cmd.hasOption("output")) {
+            this.outputFile = cmd.getOptionValue("output");
+        }
+
+        this.positionalArgs = cmd.getArgList();
+        if (!PositionalArgumentValidator.validateArguments(cmd)) {
+            System.err.println("Invalid positional arguments");
             return 1;
         }
 
-        return 0;  // Succès
+        return 0;
     }
 
     public String getFileName() {
-        return fileName;
+        return this.fileName;
+    }
+
+    public TaskState getTaskState() {
+        return taskState;
+    }
+
+    public String getOutputFile() {
+        return outputFile;
     }
 
     public List<String> getPositionalArgs() {
         return positionalArgs;
     }
+
 }

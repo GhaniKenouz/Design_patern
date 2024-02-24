@@ -14,30 +14,44 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
+import com.fges.todoapp.todo.TaskState;
 import com.fges.todoapp.files.FileHandler;
-import com.fges.todoapp.files.FileHandlerFactory;
 import com.fges.todoapp.files.FileHandlerRegistry;
-import com.fges.todoapp.files.csv.CsvFileHandlerFactory;
-import com.fges.todoapp.files.json.JsonFileHandlerFactory;
-import com.fges.todoapp.util.TaskState;
 import com.fges.todoapp.util.TodoFactory;
 
-
-/**
- * Hello world!
- */
 public class App {
 
     // Initialisation du registre de fichier
     private static final FileHandlerRegistry registry = new FileHandlerRegistry();
     // Déclaration du registre de commande
     private static final CommandRegistry commandRegistry = new CommandRegistry();
-    private static final Map<String, Command> commandRegistry = new HashMap<>();
 
-    private static Command createCommandExecutor(String command) {
-        return commandRegistry.get(command);
+    static {
+        // Ajout d'un gestionnaire de fichier CSV au registre
+        registry.registerFileF("csv", new CsvFileHandler());
+
+        // Ajout d'un gestionnaire de fichier JSON au registre
+        registry.registerFileF("json", new JsonFileHandler());
+    }
+    private static FileHandler detectFileType (String filename) {
+        String fileExtension = FilenameUtils.getExtension(filename).toLowerCase();
+        FileHandler fileHandler = registry.getFileHandler(fileExtension);
+        if (fileHandler == null) {
+            System.err.println("L'extension de fichier non prise en charge : " + fileExtension);
+            return null;
+        }
+        return fileHandler;
     }
 
+    private static void executeCommand(String command, List<String> positionalArgs)
+            throws IOException {
+        Command commandExecutor = commandRegistry.getCommand(command);
+        if (commandExecutor != null) {
+            commandExecutor.execute(positionalArgs);
+        } else {
+            System.err.println("La commande est inconnue: " + command);
+        }
+    }
     /**
      * Do not change this method
      */
@@ -56,27 +70,28 @@ public class App {
         if (cmd == null) return 1;
 
         // On traite la commande
-
         MyCommandProcessor commandProcessor = new MyCommandProcessor();
-        int result = commandProcessor.processCommand(cmd);
-        String fileName = commandProcessor.getFileName();
-        boolean isDone = cmd.hasOption("done");
+        commandProcessor.processCommand(cmd);
+
+        // On évite d'utiliser des Booléen et des if pour l'abstraction de données
         List<String> positionalArgs = commandProcessor.getPositionalArgs();
-
-        if(result != 0) return 1;
-
         String command = positionalArgs.get(0);
-        Path filePath = Paths.get(fileName);
 
-        // Détermination de la commande avec l'utilisation de la table de correspondence
+        //Chemins
+        Path filePath = Paths.get(CommandProcessor.getFileName);
+        Path outputPath = null;
 
-        Command commandExecutor = createCommandExecutor(command);
-        if (commandExecutor != null) {
-            commandExecutor.execute(positionalArgs, filePath, isDone);
-        } else {
-            System.err.println("La commande est inconnue : " + command);
-            return 1;
-        }
+        // Utilisation du registre des factories pour créer le FileHandler approprié
+        FileHandler fileHandler = detectFileType(fileName);
+        FileHandler outputFileHandler = null;
+
+        // Initialisation du registre de commande
+        commandRegistry.addCommand("insert", new InsertCommand(fileHandler, filePath, commandProcessor.getTaskState()));
+        commandRegistry.addCommand("list", new ListCommand(fileHandler,filePath, commandProcessor.getTaskState()));
+        commandRegistry.addCommand("migrate", new MigrateCommand(fileHandler, outputFileHandler, filePath, outputPath));
+
+        // Utilisation de la table de correspondence pour déterminer la commande
+        executeCommand(command,positionalArgs);
 
         System.err.println("Done.");
         return 0;
