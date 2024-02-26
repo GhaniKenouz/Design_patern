@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 import com.fges.todoapp.files.FileHandler;
 import com.fges.todoapp.files.FileReader;
 import com.fges.todoapp.util.PathValidator;
-import com.fges.todoapp.util.TaskState;
-import com.fges.todoapp.Todo.Todo;
+import com.fges.todoapp.todo.TaskState;
+import com.fges.todoapp.todo.Todo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,29 +20,31 @@ import java.util.List;
 
 public class JsonFileHandler implements FileHandler {
     @Override
-    public void write(Todo todo, Path filePath) throws IOException {
-        String fileContent = FileReader.readFileContent(filePath, new PathValidator());
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualObj = mapper.readTree(fileContent);
-        if (actualObj instanceof MissingNode) {
-            // Node was not recognised
-            actualObj = JsonNodeFactory.instance.arrayNode();
-        }
-
-        if (actualObj instanceof ArrayNode arrayNode) {
-            if (todo.getTaskState() == TaskState.DONE) {
-                // Nouvelle structure avec la propriété "done"
-                arrayNode.add(JsonNodeFactory.instance.objectNode()
-                        .put("text", todo.getName())
-                        .put("done", true)
-                );
-            } else {
-                // Structure retro compatible sans la propriété "done"
-                arrayNode.add(todo.getName());
+    public void write(List <Todo> todos, Path filePath) throws IOException {
+        for(Todo todo : todos) {
+            String fileContent = FileReader.readFileContent(filePath, new PathValidator());
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode actualObj = mapper.readTree(fileContent);
+            if (actualObj instanceof MissingNode) {
+                // Node was not recognised
+                actualObj = JsonNodeFactory.instance.arrayNode();
             }
-        }
 
-        Files.writeString(filePath, actualObj.toString());
+            if (actualObj instanceof ArrayNode arrayNode) {
+                if (todo.getTaskState() == TaskState.DONE) {
+                    // Nouvelle structure avec la propriété "done"
+                    arrayNode.add(JsonNodeFactory.instance.objectNode()
+                            .put("text", todo.getName())
+                            .put("done", true)
+                    );
+                } else {
+                    // Structure retro compatible sans la propriété "done"
+                    arrayNode.add(todo.getName());
+                }
+            }
+
+            Files.writeString(filePath, actualObj.toString());
+        }
     }
 
     @Override

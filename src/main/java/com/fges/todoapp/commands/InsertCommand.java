@@ -2,7 +2,7 @@ package com.fges.todoapp.commands;
 
 import com.fges.todoapp.files.FileHandler;
 import com.fges.todoapp.todo.Todo;
-import com.fges.todoapp.util.TaskState;
+import com.fges.todoapp.todo.TaskState;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -38,6 +38,5 @@ public class InsertCommand implements Command {
         this.fileHandler.write(todos, this.filePath); // Écrit la liste de todos dans le fichier spécifié par filePath en utilisant le FileHandler associé à cette commande.
 
         System.err.println("Insertion réussie.");
-        return 0;
     }
 }
