@@ -21,7 +21,7 @@ public class InsertCommand implements Command {
         this.taskState = taskState;
     }
     @Override
-    public int execute(List<String> positionalArgs) throws IOException {
+    public void execute(List<String> positionalArgs) throws IOException {
         // Vérifier si le fichier existe, sinon le créer
         if (!Files.exists(filePath)) {
             Files.createFile(filePath);

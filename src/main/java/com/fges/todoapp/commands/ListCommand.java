@@ -2,7 +2,7 @@ package com.fges.todoapp.commands;
 
 import com.fges.todoapp.files.FileHandler;
 import com.fges.todoapp.todo.Todo;
-import com.fges.todoapp.util.TaskState;
+import com.fges.todoapp.todo.TaskState;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,7 +20,7 @@ public class ListCommand implements Command {
     }
 
     @Override
-    public int execute(List<String> positionalArgs) throws IOException {
+    public void execute(List<String> positionalArgs) throws IOException {
         List<Todo> todoList = fileHandler.read(filePath);
         printTodoList(todoList, taskState);
         return 0;

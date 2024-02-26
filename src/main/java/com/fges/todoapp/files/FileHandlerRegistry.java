@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileHandlerRegistry {
-    private final Map<String, FileHandlerFactory> registry = new HashMap<>();
+    private final Map<String, FileHandler> registry = new HashMap<>();
 
     public void registerFileF (String extension, FileHandler fileHandler) {
         registry.put(extension, fileHandler);

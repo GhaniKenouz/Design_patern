@@ -1,8 +1,8 @@
 package com.fges.todoapp.files.csv;
 
 import com.fges.todoapp.files.FileHandler;
-import com.fges.todoapp.util.TaskState;
-import com.fges.todoapp.Todo.Todo;
+import com.fges.todoapp.todo.TaskState;
+import com.fges.todoapp.todo.Todo;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -12,12 +12,14 @@ import java.util.List;
 
 public class CsvFileHandler implements FileHandler {
     @Override
-    public void write(Todo todo, Path filePath) throws IOException {
+    public void write(List<Todo> todos Path filePath) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile(), true))) {
-            String taskState = todo.getTaskState() == TaskState.DONE ? "Done" : "Not Done";
-            writer.write(todo.getName() + ";" + taskState + "\n");
+            String taskState = todos.getTaskState() == TaskState.DONE ? "Done" : "Not Done";
+            writer.write(todos.getName() + ";" + taskState + "\n");
         }
     }
+
+
     @Override
     public List<Todo> read(Path filePath) {
         List<Todo> todoList = new ArrayList<>();

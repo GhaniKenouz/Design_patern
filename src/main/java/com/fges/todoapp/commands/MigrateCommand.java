@@ -3,6 +3,7 @@ package com.fges.todoapp.commands;
 import com.fges.todoapp.files.FileHandler;
 import com.fges.todoapp.todo.Todo;
 
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -26,7 +27,7 @@ public class MigrateCommand implements Command {
         List<Todo> todos = readFileHandler.read(inputFile);
 
         // Écriture des todos dans le fichier de destination
-        writeFileHandler.write(this.outputFile, todos);
+        writeFileHandler.write(todos, this.outputFile);
 
         System.out.println("Migration completed.");
     }
