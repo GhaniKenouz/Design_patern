@@ -4,6 +4,8 @@ package com.fges.todoapp;
 import com.fges.todoapp.commands.*;
 import com.fges.todoapp.commands.CommandRegistry;
 import com.fges.todoapp.files.FileHandlerRegistry;
+import com.fges.todoapp.files.csv.CsvFileHandler;
+import com.fges.todoapp.files.json.JsonFileHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
@@ -12,12 +14,9 @@ import java.util.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 
-import com.fges.todoapp.todo.TaskState;
 import com.fges.todoapp.files.FileHandler;
-import com.fges.todoapp.files.FileHandlerRegistry;
-import com.fges.todoapp.util.TodoFactory;
+import org.apache.commons.io.FilenameUtils;
 
 public class App {
 
@@ -78,12 +77,14 @@ public class App {
         String command = positionalArgs.get(0);
 
         //Chemins
-        Path filePath = Paths.get(CommandProcessor.getFileName);
-        Path outputPath = null;
+        Path filePath = Paths.get(commandProcessor.getFileName());
+        // A revoir, prévoir une méthode qui renvoie le nom de l'output [FileName]
+        // Path outputPath = null;
 
         // Utilisation du registre des factories pour créer le FileHandler approprié
-        FileHandler fileHandler = detectFileType(fileName);
-        FileHandler outputFileHandler = null;
+        FileHandler fileHandler = detectFileType(commandProcessor.getFileName());
+        // A revoir
+        // FileHandler outputFileHandler =  detectFileType(commandProcessor.getFileName());
 
         // Initialisation du registre de commande
         commandRegistry.addCommand("insert", new InsertCommand(fileHandler, filePath, commandProcessor.getTaskState()));

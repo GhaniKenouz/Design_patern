@@ -1,16 +1,13 @@
 package com.fges.todoapp.todo;
-
-import com.fges.todoapp.util.TaskState;
-
 public class Todo {
     private String name;
     private TaskState taskState;
 
     public Todo(){}
 
-    public Todo(String name, TaskState taskState) {
+    public Todo(String name, boolean taskState) {
         this.name = name;
-        this.taskState = taskState;
+        this.taskState = (taskState) ? TaskState.DONE : TaskState.NOT_DONE;
     }
 
     public String getName() {

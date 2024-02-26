@@ -23,7 +23,8 @@ public class MyCommandProcessor implements CommandProcessor {
         }
 
         this.positionalArgs = cmd.getArgList();
-        if (!PositionalArgumentValidator.validateArguments(cmd)) {
+        PositionalArgumentValidator argumentValidator = new PositionalArgumentValidator();
+        if (!argumentValidator.validateArguments(cmd)) {
             System.err.println("Invalid positional arguments");
             return 1;
         }

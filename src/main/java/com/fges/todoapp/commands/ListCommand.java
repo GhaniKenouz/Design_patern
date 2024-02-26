@@ -23,7 +23,6 @@ public class ListCommand implements Command {
     public void execute(List<String> positionalArgs) throws IOException {
         List<Todo> todoList = fileHandler.read(filePath);
         printTodoList(todoList, taskState);
-        return 0;
     }
 
     private void printTodoList(List<Todo> todoList, TaskState taskState) {
